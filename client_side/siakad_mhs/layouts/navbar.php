@@ -6,7 +6,7 @@
             <li><a href="profile.php" class="hover:underline">Profile</a></li>
             <!-- <li><a href="jadwal.php" class="hover:underline">Hasil KRS</a></li> -->
             <li><a href="index_krs.php" class="hover:underline">KRS</a></li>
-            <li><a href="../login.php" class="hover:underline">Logout</a></li>
+            <li><a href="../logout.php" class="hover:underline">Logout</a></li>
         </ul>
     </div>
 </nav>

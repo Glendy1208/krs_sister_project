@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Cek apakah user sudah login
+if (!isset($_SESSION['nim'])) {
+    header("Location: ../login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
