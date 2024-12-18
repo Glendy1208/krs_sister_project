@@ -56,3 +56,31 @@ def login():
             return jsonify({"message": "Invalid password"}), 401
     else:
         return jsonify({"message": "User not found"}), 404
+
+# Endpoint untuk Mengambil Data Mahasiswa Berdasarkan NIM
+@api_bp.route('/mahasiswa/<int:nim>', methods=['GET'])
+def get_mahasiswa(nim):
+    # Koneksi ke database
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)  # Hasil query dalam format dictionary
+
+    # Query JOIN antara mahasiswa dan ukt
+    cursor.execute('''
+        SELECT m.nim, m.nama, m.semester_now, m.ukt_id, u.besaran
+        FROM mahasiswa m
+        JOIN ukt u ON m.ukt_id = u.id_ukt
+        WHERE m.nim = %s
+    ''', (nim,))
+
+    # Ambil hasil query
+    result = cursor.fetchone()
+    conn.close()
+
+    # Cek apakah data ditemukan
+    if result:
+        return jsonify({
+            'message': 'Data retrieved successfully',
+            'data': result
+        }), 200
+    else:
+        return jsonify({"message": "Mahasiswa not found"}), 404
