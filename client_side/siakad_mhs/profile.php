@@ -8,19 +8,10 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Navbar -->
-    <nav class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">SIAKAD Mahasiswa</h1>
-            <ul class="flex space-x-4">
-                <li><a href="index.php" class="hover:underline">Home</a></li>
-                <li><a href="profile.php" class="hover:underline">Profile</a></li>
-                <li><a href="#" class="hover:underline">Jadwal</a></li>
-                <li><a href="#" class="hover:underline">KRS</a></li>
-                <li><a href="#" class="hover:underline">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
-
+    <?php
+    include('layouts/navbar.php');
+    ?>
+    
     <!-- Main Content -->
     <main class="flex-grow container mx-auto p-4">
         <div class="bg-white shadow rounded-lg p-6 max-w-md mx-auto">
