@@ -32,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Login berhasil, simpan token dan NIM ke dalam session
         $_SESSION['nim'] = $nim;
         $_SESSION['token'] = $result['token'];
-        $_SESSION['nama'] = 'Glendy Hernandez'; // Anda bisa memperluas API untuk mengirim nama mahasiswa
 
         header("Location: siakad_mhs/home.php");
         exit();
