@@ -23,8 +23,9 @@
         <div class="container mx-auto flex justify-between items-center px-4">
             <div class="text-lg font-semibold">SIAKAD</div>
             <ul class="flex space-x-4">
-                <li><a href="#" class="hover:underline">Home</a></li>
-                <li><a href="#" class="hover:underline">Profile</a></li>
+                <li><a href="index.php" class="hover:underline">Home</a></li>
+                <li><a href="profile.php" class="hover:underline">Profile</a></li>
+                <li><a href="#" class="hover:underline">Jadwal</a></li>
                 <li><a href="#" class="hover:underline">KRS</a></li>
                 <li><a href="#" class="hover:underline">Logout</a></li>
             </ul>
