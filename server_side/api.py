@@ -120,3 +120,51 @@ def get_all_matakuliah():
         'message': 'Data matakuliah retrieved successfully',
         'data': result
     }), 200
+
+@api_bp.route('/submit_krs', methods=['POST'])
+def submit_krs():
+    data = request.get_json()
+    nim = data.get('nim')
+    matkul_ids = data.get('matkul_ids', [])
+    print(matkul_ids)
+    print(nim)
+    print(data)
+
+    if not nim or not matkul_ids:
+        return jsonify({"message": "NIM dan daftar matkul harus diisi"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Cari semester_id berdasarkan nim dan semester_now
+        cursor.execute('''
+            SELECT sh.id_semester
+            FROM semester_history sh
+            JOIN mahasiswa m ON sh.nim_fk = m.nim
+            WHERE m.nim = %s AND sh.angka_semester = m.semester_now
+        ''', (nim,))
+        semester_data = cursor.fetchone()
+
+        if not semester_data:
+            return jsonify({"message": "Semester history tidak ditemukan untuk mahasiswa ini"}), 404
+
+        semester_id = semester_data[0]
+
+        # Masukkan data ke tabel jadwal
+        for matkul_id in matkul_ids:
+            cursor.execute('''
+                INSERT INTO jadwal (semester_id, matkul_id, aktif)
+                VALUES (%s, %s, %s)
+            ''', (semester_id, matkul_id, 1))
+
+        conn.commit()
+        return jsonify({"message": "Mata kuliah berhasil ditambahkan ke jadwal"}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
