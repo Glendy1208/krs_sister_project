@@ -16,6 +16,7 @@ def seed_database():
 
     # Menghapus data lama dengan urutan yang benar
     print("Menghapus data lama...")
+    cursor.execute('DELETE FROM jadwal')
     cursor.execute('DELETE FROM semester_history')
     cursor.execute('DELETE FROM mahasiswa')  
     cursor.execute('DELETE FROM ukt')        

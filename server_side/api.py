@@ -126,9 +126,9 @@ def submit_krs():
     data = request.get_json()
     nim = data.get('nim')
     matkul_ids = data.get('matkul_ids', [])
-    print(matkul_ids)
-    print(nim)
-    print(data)
+    # print(matkul_ids)
+    # print(nim)
+    # print(data)
 
     if not nim or not matkul_ids:
         return jsonify({"message": "NIM dan daftar matkul harus diisi"}), 400
@@ -163,6 +163,77 @@ def submit_krs():
 
     except Exception as e:
         conn.rollback()
+        return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Endpoint untuk Mengambil Jadwal Matakuliah Berdasarkan NIM dan Semester
+@api_bp.route('/matakuliah/<int:nim>/<int:semester>', methods=['GET'])
+def get_jadwal_by_nim_and_semester(nim, semester):
+    # Koneksi ke database
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)  # Hasil query dalam format dictionary
+
+    try:
+        # Langkah 1: Cari id_semester di tabel semester_history berdasarkan nim dan semester
+        cursor.execute('''
+            SELECT id_semester
+            FROM semester_history
+            WHERE nim_fk = %s AND angka_semester = %s
+        ''', (nim, semester))
+        semester_data = cursor.fetchone()
+
+        if not semester_data:
+            return jsonify({"message": "Semester history tidak ditemukan untuk mahasiswa ini"}), 404
+
+        id_semester = semester_data['id_semester']
+
+        # Langkah 2: Ambil semua matkul_id dari tabel jadwal berdasarkan id_semester
+        cursor.execute('''
+            SELECT matkul_id
+            FROM jadwal
+            WHERE semester_id = %s
+        ''', (id_semester,))
+        jadwal_data = cursor.fetchall()
+
+        if not jadwal_data:
+            return jsonify({"message": "Tidak ada jadwal untuk semester ini"}), 404
+
+        # Ambil semua matkul_id dari hasil query
+        matkul_ids = [row['matkul_id'] for row in jadwal_data]
+
+        # Langkah 3: Ambil detail data matakuliah berdasarkan matkul_id
+        format_strings = ','.join(['%s'] * len(matkul_ids))  # Membuat placeholder untuk query IN
+        query = f'''
+            SELECT 
+                m.id_matkul,
+                m.nama_matkul,
+                m.sks,
+                jm.tipe_matkul,
+                w.jam,
+                h.nama_hari,
+                r.nama_ruangan,
+                k.nama_kelas
+            FROM matakuliah m
+            JOIN jenis_matkul jm ON m.jenis_matkul_id = jm.id_jenis_matkul
+            JOIN waktu w ON m.waktu_id = w.id_waktu
+            JOIN hari h ON m.hari_id = h.id_hari
+            JOIN ruangan r ON m.ruangan_id = r.id_ruangan
+            JOIN kelas k ON m.kelas_id = k.id_kelas
+            WHERE m.id_matkul IN ({format_strings})
+        '''
+        cursor.execute(query, matkul_ids)
+        matkul_data = cursor.fetchall()
+
+        # Return hasil data matakuliah
+        return jsonify({
+            "message": "Data retrieved successfully",
+            "data": matkul_data
+        }), 200
+
+    except Exception as e:
         return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
 
     finally:

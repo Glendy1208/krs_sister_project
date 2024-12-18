@@ -1,5 +1,7 @@
 ### API ENDPOINT
 ---
 1. POST http://localhost:5000/login : login Mahasiswa
-2. GET http://localhost:5000/mahasiswa/220411100076 : mengambil data mahasiswa
+2. GET http://localhost:5000/mahasiswa/nim : mengambil data mahasiswa berdasarkan nim
 3. GET http://localhost:5000/matakuliah : mengambil semua data jadwal matakuliah
+4. POST http://localhost:5000/submit_krs : mennangani data inputan krs mahasiswa untuk dimasukkan ke dalam list matakuliah yang diambilnya
+5. GET http://localhost:5000/matakuliah/nim/semester : mengambil semua jadwal yang diambil oleh mahasiswa tertentu berdasarkan nim dan semester

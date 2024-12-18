@@ -6,6 +6,55 @@ if (!isset($_SESSION['nim'])) {
     header("Location: ../login.php");
     exit();
 }
+
+// Ambil NIM dari session
+$nim = $_SESSION['nim'];
+
+// Langkah 1: Panggil API untuk mendapatkan semester_now mahasiswa
+$api_mahasiswa_url = "http://localhost:5000/mahasiswa/$nim";
+$ch = curl_init($api_mahasiswa_url);
+
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json'
+]);
+
+$response = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+$semester_now = null;
+
+if ($http_code == 200) {
+    $result = json_decode($response, true);
+    $semester_now = $result['data']['semester_now'] ?? null;
+} else {
+    $error_message = "Gagal mendapatkan data mahasiswa. Silakan coba lagi.";
+}
+
+// Langkah 2: Panggil API untuk mendapatkan data jadwal mahasiswa berdasarkan NIM dan semester_now
+$jadwal_data = [];
+
+if ($semester_now !== null) {
+    $api_jadwal_url = "http://localhost:5000/matakuliah/$nim/$semester_now";
+    $ch = curl_init($api_jadwal_url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json'
+    ]);
+
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($http_code == 200) {
+        $result = json_decode($response, true);
+        $jadwal_data = $result['data'];
+    } else {
+        $error_message = "Gagal mendapatkan jadwal mata kuliah.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +85,7 @@ if (!isset($_SESSION['nim'])) {
                 <thead>
                     <tr class="bg-gray-200">
                         <th class="border border-gray-300 px-4 py-2">
-                            <input type="checkbox" id="select-all" />
+                            Pilih
                         </th>
                         <th class="border border-gray-300 px-4 py-2">Mata Kuliah</th>
                         <th class="border border-gray-300 px-4 py-2">Hari</th>
@@ -48,30 +97,28 @@ if (!isset($_SESSION['nim'])) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="border border-gray-300 px-4 py-2 text-center">
-                            <input type="checkbox" class="select-item" />
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2">Pemrograman Web</td>
-                        <td class="border border-gray-300 px-4 py-2">Senin</td>
-                        <td class="border border-gray-300 px-4 py-2">08:00 - 10:00</td>
-                        <td class="border border-gray-300 px-4 py-2">Lab 1</td>
-                        <td class="border border-gray-300 px-4 py-2">A</td>
-                        <td class="border border-gray-300 px-4 py-2">3</td>
-                        <td class="border border-gray-300 px-4 py-2">W</td>
-                    </tr>
-                    <tr class="bg-gray-50">
-                        <td class="border border-gray-300 px-4 py-2 text-center">
-                            <input type="checkbox" class="select-item" />
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2">Basis Data</td>
-                        <td class="border border-gray-300 px-4 py-2">Selasa</td>
-                        <td class="border border-gray-300 px-4 py-2">10:00 - 12:00</td>
-                        <td class="border border-gray-300 px-4 py-2">Ruang 204</td>
-                        <td class="border border-gray-300 px-4 py-2">B</td>
-                        <td class="border border-gray-300 px-4 py-2">4</td>
-                        <td class="border border-gray-300 px-4 py-2">P</td>
-                    </tr>
+                    <?php if (!empty($jadwal_data)): ?>
+                        <?php foreach ($jadwal_data as $jadwal): ?>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2 text-center">
+                                    <input type="checkbox" class="select-item" name="jadwal[]" value="<?= htmlspecialchars($jadwal['id_matkul']); ?>" />
+                                </td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_matkul']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_hari']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['jam']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_ruangan']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_kelas']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['sks']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['tipe_matkul']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="8" class="text-center text-red-500 py-4">
+                                <?= htmlspecialchars($error_message ?? "Tidak ada data mata kuliah."); ?>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
             <button class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Hapus Mata Kuliah</button>
