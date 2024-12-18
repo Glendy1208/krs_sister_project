@@ -84,3 +84,39 @@ def get_mahasiswa(nim):
         }), 200
     else:
         return jsonify({"message": "Mahasiswa not found"}), 404
+
+# Endpoint untuk Mengambil semua Data Matakuliah
+@api_bp.route('/matakuliah', methods=['GET'])
+def get_all_matakuliah():
+    # Koneksi ke database
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)  # Hasil query dalam format dictionary
+
+    # Query JOIN untuk mengambil data matakuliah
+    cursor.execute('''
+        SELECT 
+            m.id_matkul,
+            m.nama_matkul,
+            m.sks,
+            jm.tipe_matkul,
+            w.jam,
+            h.nama_hari,
+            r.nama_ruangan,
+            k.nama_kelas
+        FROM matakuliah m
+        JOIN jenis_matkul jm ON m.jenis_matkul_id = jm.id_jenis_matkul
+        JOIN waktu w ON m.waktu_id = w.id_waktu
+        JOIN hari h ON m.hari_id = h.id_hari
+        JOIN ruangan r ON m.ruangan_id = r.id_ruangan
+        JOIN kelas k ON m.kelas_id = k.id_kelas
+    ''')
+
+    # Ambil semua data hasil query
+    result = cursor.fetchall()
+    conn.close()
+
+    # Kembalikan hasil dalam bentuk JSON
+    return jsonify({
+        'message': 'Data matakuliah retrieved successfully',
+        'data': result
+    }), 200
