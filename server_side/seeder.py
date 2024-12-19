@@ -7,25 +7,130 @@ bcrypt = Bcrypt()
 def seed_database():
     # Koneksi ke database MySQL
     conn = mysql.connector.connect(
-        host="localhost",
-        user="root",      # Ganti dengan username MySQL Anda
-        password="",      # Ganti dengan password MySQL Anda
+        host="mysql",
+        user="chronospng",      # Ganti dengan username MySQL Anda
+        password="chronospng",      # Ganti dengan password MySQL Anda
         database="sister"
     )
     cursor = conn.cursor()
 
     # Menghapus data lama dengan urutan yang benar
     print("Menghapus data lama...")
-    cursor.execute('DELETE FROM jadwal')
-    cursor.execute('DELETE FROM semester_history')
-    cursor.execute('DELETE FROM mahasiswa')  
-    cursor.execute('DELETE FROM ukt')        
-    cursor.execute('DELETE FROM matakuliah')
-    cursor.execute('DELETE FROM jenis_matkul')
-    cursor.execute('DELETE FROM waktu')
-    cursor.execute('DELETE FROM ruangan')
-    cursor.execute('DELETE FROM kelas')
-    cursor.execute('DELETE FROM hari')
+    try:
+        cursor.execute('DELETE FROM jadwal')
+        cursor.execute('DELETE FROM semester_history')
+        cursor.execute('DELETE FROM mahasiswa')  
+        cursor.execute('DELETE FROM ukt')        
+        cursor.execute('DELETE FROM matakuliah')
+        cursor.execute('DELETE FROM jenis_matkul')
+        cursor.execute('DELETE FROM waktu')
+        cursor.execute('DELETE FROM ruangan')
+        cursor.execute('DELETE FROM kelas')
+        cursor.execute('DELETE FROM hari')
+    except:
+        imdumb = 'maybe'
+        # try:
+        #     print("Tabel belum ada, bersiap untuk menambahkan")
+
+        #     # Membuat tabel waktu
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS waktu (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             jam TIME NOT NULL
+        #         )
+        #     ''')
+
+        #     # Membuat tabel ruangan
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS ruangan (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             nama_ruangan VARCHAR(100) NOT NULL
+        #         )
+        #     ''')
+
+        #     # Membuat tabel kelas
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS kelas (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             nama_kelas VARCHAR(10) NOT NULL
+        #         )
+        #     ''')
+
+        #     # Membuat tabel hari
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS hari (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             nama_hari VARCHAR(20) NOT NULL
+        #         )
+        #     ''')
+
+        #     # Membuat tabel jenis_matkul
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS jenis_matkul (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             tipe_matkul ENUM('P', 'W') NOT NULL
+        #         )
+        #     ''')
+
+        #     # Membuat tabel mahasiswa (berhubungan dengan ukt)
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS mahasiswa (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             nim VARCHAR(20) UNIQUE NOT NULL,
+        #             nama VARCHAR(100) NOT NULL,
+        #             password VARCHAR(255) NOT NULL,
+        #             semester_now INT,
+        #             ukt_id INT,
+        #             FOREIGN KEY (ukt_id) REFERENCES ukt(id)
+        #         )
+        #     ''')
+
+        #     # Membuat tabel semester_history (berhubungan dengan mahasiswa)
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS semester_history (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             angka_semester INT,
+        #             paid INT,
+        #             nim_fk VARCHAR(20),
+        #             FOREIGN KEY (nim_fk) REFERENCES mahasiswa(nim)
+        #         )
+        #     ''')
+
+        #     # Membuat tabel ukt (berhubungan dengan mahasiswa dan semester_history)
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS ukt (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             mahasiswa_id INT,
+        #             jumlah_ukt DECIMAL(10, 2),
+        #             semester_history_id INT,
+        #             FOREIGN KEY (mahasiswa_id) REFERENCES mahasiswa(id),
+        #             FOREIGN KEY (semester_history_id) REFERENCES semester_history(id)
+        #         )
+        #     ''')
+
+        #     # Membuat tabel matakuliah (berhubungan dengan waktu, kelas, jenis_matkul, hari, ruangan)
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS matakuliah (
+        #             id INT PRIMARY KEY AUTO_INCREMENT,
+        #             waktu_id INT,
+        #             kelas_id INT,
+        #             jenis_matkul_id INT,
+        #             hari_id INT,
+        #             ruangan_id INT,
+        #             nama_matkul VARCHAR(100) NOT NULL,
+        #             sks INT,
+        #             FOREIGN KEY (waktu_id) REFERENCES waktu(id),
+        #             FOREIGN KEY (kelas_id) REFERENCES kelas(id),
+        #             FOREIGN KEY (jenis_matkul_id) REFERENCES jenis_matkul(id),
+        #             FOREIGN KEY (hari_id) REFERENCES hari(id),
+        #             FOREIGN KEY (ruangan_id) REFERENCES ruangan(id)
+        #         )
+        #     ''')
+        #     print("Tabel telah berhasil dibuat!")
+        # except:
+        #     print("Gagal Menambahkan Table")
+
+
 
     # Tambahkan data ke tabel ukt
     print("Menambahkan data ukt...")
@@ -34,6 +139,10 @@ def seed_database():
     # Tambahkan data ke tabel mahasiswa
     print("Menambahkan data mahasiswa...")
     hashed_password = bcrypt.generate_password_hash("rahasia123").decode('utf-8')
+    # cursor.execute('''
+    #     INSERT INTO mahasiswa (nim, nama, password, semester_now, ukt_id)
+    #     VALUES (%s, %s, %s, %s, %s)
+    # ''', (220411100076, 'Glendy Hernandez', hashed_password, 5, 1))    
     cursor.execute('''
         INSERT INTO mahasiswa (nim, nama, password, semester_now, ukt_id)
         VALUES (%s, %s, %s, %s, %s)

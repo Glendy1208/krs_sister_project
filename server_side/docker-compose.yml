@@ -1,0 +1,33 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=chronospng
+      - MYSQL_DATABASE=sister
+      - MYSQL_USER=chronospng
+      - MYSQL_PASSWORD=chronospng
+    ports:
+      - "3306:3306"
+    networks:
+      - app_network
+  app:
+    build: .
+    container_name: krs_serverside
+    image: krs_serverside:1.0.0
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - SECRET_KEY=mysecretkey
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+    command: ["./wait-for-it.sh", "mysql:3306", "--", "python", "app.py"]
+
+networks:
+  app_network:
+    driver: bridge

@@ -13,9 +13,9 @@ SECRET_KEY = 'mysecretkey'
 # Koneksi Database
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",      # Ganti dengan username MySQL Anda
-        password="",      # Ganti dengan password MySQL Anda
+        host="mysql",
+        user="chronospng",      # Ganti dengan username MySQL Anda
+        password="chronospng",      # Ganti dengan password MySQL Anda
         database="sister"
     )
 
