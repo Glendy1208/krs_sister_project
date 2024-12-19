@@ -13,7 +13,7 @@ $data_mahasiswa = null;
 $error_message = null;
 
 // Ambil data dari API menggunakan cURL
-$api_url = "http://localhost:5000/mahasiswa/" . $nim;
+$api_url = "http://app:5000/mahasiswa/" . $nim;
 $ch = curl_init($api_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -30,22 +30,24 @@ if ($http_code == 200) {
     $result = json_decode($response, true);
     $data_mahasiswa = $result['data'];
 } else {
-    $error_message = "Gagal mengambil data mahasiswa. Silakan coba lagi.";
+    $error_message = "Tidak Ada Matakuliah Yang DiambilSSS.";
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Mahasiswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Navbar -->
     <?php include('layouts/navbar.php'); ?>
-    
+
     <!-- Main Content -->
     <main class="flex-grow container mx-auto p-4">
         <div class="bg-white shadow rounded-lg p-6 max-w-md mx-auto">
@@ -79,4 +81,5 @@ if ($http_code == 200) {
         <p>© 2024 SIAKAD Mahasiswa. All rights reserved.</p>
     </footer>
 </body>
+
 </html>

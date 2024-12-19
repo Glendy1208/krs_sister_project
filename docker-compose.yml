@@ -1,0 +1,63 @@
+services:
+  # Service untuk MySQL
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=chronospng
+      - MYSQL_DATABASE=sister
+      - MYSQL_USER=chronospng
+      - MYSQL_PASSWORD=chronospng
+    ports:
+      - "3306:3306"
+    networks:
+      - shared_network
+
+  # Service untuk API Python (Flask)
+  app:
+    build:
+      context: ./server_side # Path ke folder Python
+    container_name: krs_serverside
+    image: krs_serverside:1.0.0
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - SECRET_KEY=mysecretkey
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - shared_network
+
+  # Service untuk PHP
+  php:
+    build:
+      context: ./client_side # Path ke folder PHP
+    container_name: php-krs-container
+    image: php-krs-container:1.0.0
+    volumes:
+      - ./client_side:/var/www/html
+    expose:
+      - "9000"
+    networks:
+      - shared_network
+
+  # Service untuk Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./client_side:/var/www/html
+      - ./client_side/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    driver: bridge

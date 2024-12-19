@@ -26,7 +26,15 @@ services:
       - mysql
     networks:
       - app_network
-    command: ["./wait-for-it.sh", "mysql:3306", "--", "python", "app.py"]
+    command:
+      [
+        "./wait-for-it.sh",
+        "mysql:3306",
+        "--timeout=30",
+        "--",
+        "python",
+        "app.py",
+      ]
 
 networks:
   app_network:

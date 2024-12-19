@@ -8,7 +8,7 @@ if (!isset($_SESSION['nim'])) {
 }
 
 // Ambil data mata kuliah dari API
-$api_url = "http://localhost:5000/matakuliah";
+$api_url = "http://app:5000/matakuliah";
 $ch = curl_init($api_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -35,12 +35,14 @@ if ($http_code == 200) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Mata Kuliah</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Navbar -->
     <?php
@@ -102,4 +104,5 @@ if ($http_code == 200) {
         <p>&copy; 2024 SIAKAD Mahasiswa. All rights reserved.</p>
     </footer>
 </body>
+
 </html>

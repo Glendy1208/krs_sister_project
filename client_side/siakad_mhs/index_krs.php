@@ -11,7 +11,7 @@ if (!isset($_SESSION['nim'])) {
 $nim = $_SESSION['nim'];
 
 // Langkah 1: Panggil API untuk mendapatkan semester_now mahasiswa
-$api_mahasiswa_url = "http://localhost:5000/mahasiswa/$nim";
+$api_mahasiswa_url = "http://app:5000/mahasiswa/$nim";
 $ch = curl_init($api_mahasiswa_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -36,7 +36,7 @@ if ($http_code == 200) {
 $jadwal_data = [];
 
 if ($semester_now !== null) {
-    $api_jadwal_url = "http://localhost:5000/matakuliah/$nim/$semester_now";
+    $api_jadwal_url = "http://app:5000/matakuliah/$nim/$semester_now";
     $ch = curl_init($api_jadwal_url);
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -59,12 +59,14 @@ if ($semester_now !== null) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengisian KRS</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Navbar -->
     <?php
@@ -130,4 +132,5 @@ if ($semester_now !== null) {
         <p>&copy; 2024 SIAKAD Mahasiswa. All rights reserved.</p>
     </footer>
 </body>
+
 </html>

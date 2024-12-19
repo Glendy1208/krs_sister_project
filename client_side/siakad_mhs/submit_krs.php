@@ -20,7 +20,7 @@ if (empty($matkul_ids)) {
 }
 
 // Kirim data ke API
-$api_url = "http://localhost:5000/submit_krs";
+$api_url = "http://app:5000/submit_krs";
 $data = json_encode([
     "nim" => $nim,
     "matkul_ids" => $matkul_ids
