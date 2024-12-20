@@ -102,6 +102,7 @@ if ($semester_now !== null) {
                 </thead>
                 <tbody>
                     <?php if (!empty($jadwal_data)): ?>
+                        <?php $total=0;?>
                         <?php foreach ($jadwal_data as $jadwal): ?>
                             <tr>
                                 <td class="border border-gray-300 px-4 py-2 text-center">
@@ -115,7 +116,12 @@ if ($semester_now !== null) {
                                 <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['sks']); ?></td>
                                 <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['tipe_matkul']); ?></td>
                             </tr>
+                            <?php $total += $jadwal["sks"];?>
                         <?php endforeach; ?>
+                        <tr>
+                            <td colspan="6" class="border border-gray-300 px-4 py-2 text-right"><b>Total SKS</b></td>
+                            <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($total); ?></td>
+                            <td class="border border-gray-300 px-4 py-2"></td>
                     <?php else: ?>
                         <tr>
                             <td colspan="8" class="text-center text-red-500 py-4">
