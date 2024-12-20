@@ -1,4 +1,6 @@
 <?php
+include('env.php');
+
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ]);
 
     // Inisialisasi cURL
-    $ch = curl_init("http://app:5000/login"); // Sesuaikan dengan URL API Flask Anda
+    $ch = curl_init("$BASE_URL/login"); // Sesuaikan dengan URL API Flask Anda
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json'

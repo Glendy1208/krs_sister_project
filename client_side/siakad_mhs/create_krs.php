@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+include('../env.php');
 // Cek apakah user sudah login
 if (!isset($_SESSION['nim'])) {
     header("Location: ../login.php");
@@ -8,7 +8,7 @@ if (!isset($_SESSION['nim'])) {
 }
 
 // Ambil data mata kuliah dari API
-$api_url = "http://app:5000/matakuliah";
+$api_url = "$BASE_URL/matakuliah";
 $ch = curl_init($api_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

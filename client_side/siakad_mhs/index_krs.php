@@ -1,4 +1,6 @@
 <?php
+include('../env.php');
+
 session_start();
 
 // Cek apakah user sudah login
@@ -11,7 +13,7 @@ if (!isset($_SESSION['nim'])) {
 $nim = $_SESSION['nim'];
 
 // Langkah 1: Panggil API untuk mendapatkan semester_now mahasiswa
-$api_mahasiswa_url = "http://app:5000/mahasiswa/$nim";
+$api_mahasiswa_url = "$BASE_URL/mahasiswa/$nim";
 $ch = curl_init($api_mahasiswa_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -36,7 +38,7 @@ if ($http_code == 200) {
 $jadwal_data = [];
 
 if ($semester_now !== null) {
-    $api_jadwal_url = "http://app:5000/matakuliah/$nim/$semester_now";
+    $api_jadwal_url = "$BASE_URL/matakuliah/$nim/$semester_now";
     $ch = curl_init($api_jadwal_url);
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

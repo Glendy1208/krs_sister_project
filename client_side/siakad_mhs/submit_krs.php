@@ -1,4 +1,6 @@
 <?php
+include('../env.php');
+
 session_start();
 
 // Cek apakah user sudah login
@@ -20,7 +22,7 @@ if (empty($matkul_ids)) {
 }
 
 // Kirim data ke API
-$api_url = "http://app:5000/submit_krs";
+$api_url = "$BASE_URL/submit_krs";
 $data = json_encode([
     "nim" => $nim,
     "matkul_ids" => $matkul_ids
@@ -40,7 +42,7 @@ curl_close($ch);
 
 if ($http_code == 200) {
     $_SESSION['success_message'] = "Mata kuliah berhasil ditambahkan.";
-    header("Location: create_krs.php");
+    header("Location: index_krs.php");
 } else {
     $_SESSION['error_message'] = "Gagal menambahkan mata kuliah. Silakan coba lagi.";
     header("Location: create_krs.php");
