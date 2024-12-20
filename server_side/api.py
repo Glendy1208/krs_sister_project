@@ -346,3 +346,53 @@ def get_matakuliah_by_id(id_matkul):
     finally:
         cursor.close()
         conn.close()
+        
+# Endpoint untuk Menghapus Data Mata Kuliah yang Diambil
+@api_bp.route('/jadwal/hapus', methods=['DELETE'])
+def delete_jadwal():
+    data = request.get_json()  # Ambil data JSON dari body request
+    # print(data)
+    nim = data.get('nim')  # NIM mahasiswa
+    id_matkul_list = data.get('id_matkul')  # List ID mata kuliah
+
+    # Validasi input
+    if not nim or not id_matkul_list:
+        return jsonify({"message": "NIM dan ID mata kuliah wajib diisi"}), 400
+
+    # Koneksi ke database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Ambil ID semester saat ini dari mahasiswa berdasarkan NIM
+        cursor.execute('''
+            SELECT sh.id_semester
+            FROM mahasiswa m
+            JOIN semester_history sh ON m.nim = sh.nim_fk
+            WHERE m.nim = %s AND sh.angka_semester = m.semester_now
+        ''', (nim,))
+        semester_data = cursor.fetchone()
+        if not semester_data:
+            print("Semester tidak ditemukan")
+            return jsonify({"message": "Semester tidak ditemukan untuk mahasiswa ini"}), 404
+
+        semester_id = semester_data[0]
+        # Loop untuk menghapus jadwal berdasarkan id_matkul
+        print(id_matkul_list)
+        for id_matkul in id_matkul_list:
+            cursor.execute('''
+                DELETE FROM jadwal
+                WHERE semester_id = %s AND matkul_id = %s AND aktif = 1
+            ''', (semester_id, id_matkul))
+
+        conn.commit()  # Simpan perubahan
+
+        return jsonify({"message": "Jadwal berhasil dihapus"}), 200
+
+    except Exception as e:
+        conn.rollback()  # Batalkan perubahan jika terjadi error
+        return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
