@@ -54,7 +54,7 @@ if ($semester_now !== null) {
         $result = json_decode($response, true);
         $jadwal_data = $result['data'];
     } else {
-        $error_message = "Gagal mendapatkan jadwal mata kuliah.";
+        $error_message = "Belum mengambil KRS.";
     }
 }
 ?>
