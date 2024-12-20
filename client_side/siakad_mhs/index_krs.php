@@ -31,7 +31,7 @@ if ($http_code == 200) {
     $result = json_decode($response, true);
     $semester_now = $result['data']['semester_now'] ?? null;
 } else {
-    $error_message = "Gagal mendapatkan data mahasiswa. Silakan coba lagi.";
+    $error_message = "belum mengambil KRS";
 }
 
 // Langkah 2: Panggil API untuk mendapatkan data jadwal mahasiswa berdasarkan NIM dan semester_now
@@ -84,7 +84,7 @@ if ($semester_now !== null) {
 
         <?php 
         if (isset($error_message)) {
-            echo "<div class='bg-red-500 text-white p-4 text-center'>$error_message</div>";
+            // echo "<div class='bg-red-500 text-white p-4 text-center'>$error_message</div>";
         }
         elseif (isset($_SESSION['success_message'])){
             $pesan = $_SESSION['success_message'];
