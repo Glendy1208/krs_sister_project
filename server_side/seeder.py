@@ -138,22 +138,27 @@ def seed_database():
 
     # Tambahkan data ke tabel mahasiswa
     print("Menambahkan data mahasiswa...")
-    hashed_password = bcrypt.generate_password_hash("rahasia123").decode('utf-8')
-    # cursor.execute('''
-    #     INSERT INTO mahasiswa (nim, nama, password, semester_now, ukt_id)
-    #     VALUES (%s, %s, %s, %s, %s)
-    # ''', (220411100076, 'Glendy Hernandez', hashed_password, 5, 1))    
+    hashed_password1 = bcrypt.generate_password_hash("rahasia123").decode('utf-8')
+    hashed_password2 = bcrypt.generate_password_hash("218996").decode('utf-8')
     cursor.execute('''
         INSERT INTO mahasiswa (nim, nama, password, semester_now, ukt_id)
         VALUES (%s, %s, %s, %s, %s)
-    ''', (220411100076, 'Glendy Hernandez', hashed_password, 5, 1))
+    ''', (220411100130, 'Ahmad Ar-rosyid H.', hashed_password2, 5, 1))    
+    cursor.execute('''
+        INSERT INTO mahasiswa (nim, nama, password, semester_now, ukt_id)
+        VALUES (%s, %s, %s, %s, %s)
+    ''', (220411100076, 'Glendy Hernandez', hashed_password1, 5, 1))
 
     #tambahkan data ke tabel semester_history
     print("Menambahkan data semester history...")
     cursor.execute('''
         INSERT INTO semester_history (angka_semester, paid, nim_fk)
         VALUES (%s, %s, %s)
-    ''', (5,1,220411100076))
+    ''', (5,1,220411100076))    
+    cursor.execute('''
+        INSERT INTO semester_history (angka_semester, paid, nim_fk)
+        VALUES (%s, %s, %s)
+    ''', (5,0,220411100130))
 
     # Seeder tabel waktu
     print("Menambahkan data tabel waktu...")

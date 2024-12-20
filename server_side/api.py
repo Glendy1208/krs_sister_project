@@ -66,9 +66,16 @@ def get_mahasiswa(nim):
 
     # Query JOIN antara mahasiswa dan ukt
     cursor.execute('''
-        SELECT m.nim, m.nama, m.semester_now, m.ukt_id, u.besaran
+        SELECT 
+            m.nim, 
+            m.nama, 
+            m.semester_now, 
+            m.ukt_id, 
+            u.besaran, 
+            sh.paid
         FROM mahasiswa m
         JOIN ukt u ON m.ukt_id = u.id_ukt
+        JOIN semester_history sh ON m.nim = sh.nim_fk
         WHERE m.nim = %s
     ''', (nim,))
 

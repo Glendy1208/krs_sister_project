@@ -28,6 +28,11 @@ $semester_now = null;
 if ($http_code == 200) {
     $result = json_decode($response, true);
     $semester_now = $result['data']['semester_now'] ?? null;
+    $paid = $result['data']['paid'] ?? null;
+    if ($paid == null || $paid == 0) {
+        header("Location: ./form_pembayaran_ukt.php");
+        exit();
+    }
 } else {
     $error_message = "Gagal mendapatkan data mahasiswa. Silakan coba lagi.";
 }

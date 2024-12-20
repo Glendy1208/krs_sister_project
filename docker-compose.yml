@@ -29,6 +29,19 @@ services:
     depends_on:
       - mysql
     networks:
+      - shared_network # Service untuk API Python (Flask)
+  bank:
+    build:
+      context: ./bank_api # Path ke folder Python
+    container_name: bank_api
+    image: bank_api:1.0.0
+    ports:
+      - "5002:5001"
+    environment:
+      - FLASK_APP=bank.py
+      - FLASK_ENV=development
+      - FLASK_RUN_PORT=5001
+    networks:
       - shared_network
 
   # Service untuk PHP
