@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+include('../env.php');
 // Cek apakah user sudah login
 if (!isset($_SESSION['nim'])) {
     header("Location: ../login.php");
@@ -13,7 +13,7 @@ $data_mahasiswa = null;
 $error_message = null;
 
 // Ambil data dari API menggunakan cURL
-$api_url = "http://app:5000/mahasiswa/" . $nim;
+$api_url = "$BASE_URL/mahasiswa/" . $nim;
 $ch = curl_init($api_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

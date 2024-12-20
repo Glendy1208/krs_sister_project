@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+include('../env.php');
 // Cek apakah user sudah login
 if (!isset($_SESSION['nim'])) {
     header("Location: ../login.php");

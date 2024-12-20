@@ -6,10 +6,16 @@ bcrypt = Bcrypt()
 
 def seed_database():
     # Koneksi ke database MySQL
+    # conn = mysql.connector.connect(
+    #     host="mysql",
+    #     user="chronospng",      # Ganti dengan username MySQL Anda
+    #     password="chronospng",      # Ganti dengan password MySQL Anda
+    #     database="sister"
+    # )
     conn = mysql.connector.connect(
-        host="mysql",
-        user="chronospng",      # Ganti dengan username MySQL Anda
-        password="chronospng",      # Ganti dengan password MySQL Anda
+        host="localhost",
+        user="root",      # Ganti dengan username MySQL Anda
+        password="",      # Ganti dengan password MySQL Anda
         database="sister"
     )
     cursor = conn.cursor()

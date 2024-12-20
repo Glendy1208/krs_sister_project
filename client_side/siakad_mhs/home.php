@@ -31,6 +31,7 @@ if (!isset($_SESSION['nim'])) {
     <!-- Navbar -->
      <?php 
         include('layouts/navbar.php');
+        include('../env.php');
      ?>
 
     <!-- Main Content -->

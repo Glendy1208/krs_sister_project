@@ -1,4 +1,6 @@
 <?php
+include('../env.php');
+
 session_start();
 
 // Cek apakah user sudah login
@@ -11,7 +13,7 @@ if (!isset($_SESSION['nim'])) {
 $nim = $_SESSION['nim'];
 
 // Langkah 1: Panggil API untuk mendapatkan semester_now mahasiswa
-$api_mahasiswa_url = "http://app:5000/mahasiswa/$nim";
+$api_mahasiswa_url = "$BASE_URL/mahasiswa/$nim";
 $ch = curl_init($api_mahasiswa_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -34,14 +36,14 @@ if ($http_code == 200) {
         exit();
     }
 } else {
-    $error_message = "Gagal mendapatkan data mahasiswa. Silakan coba lagi.";
+    $error_message = "belum mengambil KRS";
 }
 
 // Langkah 2: Panggil API untuk mendapatkan data jadwal mahasiswa berdasarkan NIM dan semester_now
 $jadwal_data = [];
 
 if ($semester_now !== null) {
-    $api_jadwal_url = "http://app:5000/matakuliah/$nim/$semester_now";
+    $api_jadwal_url = "$BASE_URL/matakuliah/$nim/$semester_now";
     $ch = curl_init($api_jadwal_url);
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -57,7 +59,7 @@ if ($semester_now !== null) {
         $result = json_decode($response, true);
         $jadwal_data = $result['data'];
     } else {
-        $error_message = "Gagal mendapatkan jadwal mata kuliah.";
+        $error_message = "Belum mengambil KRS.";
     }
 }
 ?>
@@ -77,7 +79,7 @@ if ($semester_now !== null) {
     <?php
     include('layouts/navbar.php');
     ?>
-
+    
     <!-- Main Content -->
     <main class="flex-grow container mx-auto p-4">
         <div class="flex justify-between items-center mb-4">
@@ -85,6 +87,16 @@ if ($semester_now !== null) {
             <a href="create_krs.php" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Tambah Mata Kuliah</a>
         </div>
 
+        <?php 
+        if (isset($error_message)) {
+            // echo "<div class='bg-red-500 text-white p-4 text-center'>$error_message</div>";
+        }
+        elseif (isset($_SESSION['success_message'])){
+            $pesan = $_SESSION['success_message'];
+            echo "<div class='bg-green-500 text-white p-4 mb-4 rounded'>$pesan</div>";
+            unset($_SESSION['success_message']);
+        }
+        ?>
         <!-- KRS Table Box -->
         <div class="bg-white shadow rounded-lg p-6">
             <h3 class="text-xl font-bold mb-4">Mata Kuliah yang Diambil</h3>
@@ -105,6 +117,7 @@ if ($semester_now !== null) {
                 </thead>
                 <tbody>
                     <?php if (!empty($jadwal_data)): ?>
+                        <?php $total=0;?>
                         <?php foreach ($jadwal_data as $jadwal): ?>
                             <tr>
                                 <td class="border border-gray-300 px-4 py-2 text-center">
@@ -118,7 +131,12 @@ if ($semester_now !== null) {
                                 <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['sks']); ?></td>
                                 <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['tipe_matkul']); ?></td>
                             </tr>
+                            <?php $total += $jadwal["sks"];?>
                         <?php endforeach; ?>
+                        <tr>
+                            <td colspan="6" class="border border-gray-300 px-4 py-2 text-right"><b>Total SKS</b></td>
+                            <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($total); ?></td>
+                            <td class="border border-gray-300 px-4 py-2"></td>
                     <?php else: ?>
                         <tr>
                             <td colspan="8" class="text-center text-red-500 py-4">

@@ -12,10 +12,16 @@ SECRET_KEY = 'mysecretkey'
 
 # Koneksi Database
 def get_db_connection():
-    return mysql.connector.connect(
-        host="mysql",
-        user="chronospng",      # Ganti dengan username MySQL Anda
-        password="chronospng",      # Ganti dengan password MySQL Anda
+    # return mysql.connector.connect(
+    #     host="mysql",
+    #     user="chronospng",      # Ganti dengan username MySQL Anda
+    #     password="chronospng",      # Ganti dengan password MySQL Anda
+    #     database="sister"
+    # )
+        return mysql.connector.connect(
+        host="localhost",
+        user="root",      # Ganti dengan username MySQL Anda
+        password="",      # Ganti dengan password MySQL Anda
         database="sister"
     )
 
@@ -239,6 +245,53 @@ def get_jadwal_by_nim_and_semester(nim, semester):
             "message": "Data retrieved successfully",
             "data": matkul_data
         }), 200
+
+    except Exception as e:
+        return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Endpoint untuk Mengambil Data Mata Kuliah Berdasarkan ID Matkul
+@api_bp.route('/matakuliah/<int:id_matkul>', methods=['GET'])
+def get_matakuliah_by_id(id_matkul):
+    # Koneksi ke database
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)  # Hasil query dalam format dictionary
+
+    try:
+        # Query untuk mengambil data mata kuliah berdasarkan id_matkul
+        cursor.execute('''
+            SELECT 
+                m.id_matkul,
+                m.nama_matkul,
+                m.sks,
+                jm.tipe_matkul,
+                w.jam,
+                h.nama_hari,
+                r.nama_ruangan,
+                k.nama_kelas
+            FROM matakuliah m
+            JOIN jenis_matkul jm ON m.jenis_matkul_id = jm.id_jenis_matkul
+            JOIN waktu w ON m.waktu_id = w.id_waktu
+            JOIN hari h ON m.hari_id = h.id_hari
+            JOIN ruangan r ON m.ruangan_id = r.id_ruangan
+            JOIN kelas k ON m.kelas_id = k.id_kelas
+            WHERE m.id_matkul = %s
+        ''', (id_matkul,))
+
+        # Ambil hasil query
+        matkul_data = cursor.fetchone()
+
+        # Cek jika mata kuliah ditemukan
+        if matkul_data:
+            return jsonify({
+                "message": "Data mata kuliah ditemukan",
+                "data": matkul_data
+            }), 200
+        else:
+            return jsonify({"message": "Mata kuliah tidak ditemukan"}), 404
 
     except Exception as e:
         return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
