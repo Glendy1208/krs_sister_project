@@ -88,8 +88,10 @@ if ($semester_now !== null) {
         </div>
 
         <?php 
-        if (isset($error_message)) {
-            // echo "<div class='bg-red-500 text-white p-4 text-center'>$error_message</div>";
+        if (isset($_SESSION['error_message'])) {
+            $pesan = $_SESSION['error_message'];
+            echo "<div class='bg-red-500 text-white p-4 text-center'>$pesan</div>";
+            unset($_SESSION['error_message']);
         }
         elseif (isset($_SESSION['success_message'])){
             $pesan = $_SESSION['success_message'];
@@ -100,53 +102,55 @@ if ($semester_now !== null) {
         <!-- KRS Table Box -->
         <div class="bg-white shadow rounded-lg p-6">
             <h3 class="text-xl font-bold mb-4">Mata Kuliah yang Diambil</h3>
-            <table class="w-full table-auto border-collapse border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th class="border border-gray-300 px-4 py-2">
-                            Pilih
-                        </th>
-                        <th class="border border-gray-300 px-4 py-2">Mata Kuliah</th>
-                        <th class="border border-gray-300 px-4 py-2">Hari</th>
-                        <th class="border border-gray-300 px-4 py-2">Jam</th>
-                        <th class="border border-gray-300 px-4 py-2">Ruangan</th>
-                        <th class="border border-gray-300 px-4 py-2">Kelas</th>
-                        <th class="border border-gray-300 px-4 py-2">Bobot (SKS)</th>
-                        <th class="border border-gray-300 px-4 py-2">Jenis</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($jadwal_data)): ?>
-                        <?php $total=0;?>
-                        <?php foreach ($jadwal_data as $jadwal): ?>
-                            <tr>
-                                <td class="border border-gray-300 px-4 py-2 text-center">
-                                    <input type="checkbox" class="select-item" name="jadwal[]" value="<?= htmlspecialchars($jadwal['id_matkul']); ?>" />
-                                </td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_matkul']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_hari']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['jam']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_ruangan']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_kelas']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['sks']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['tipe_matkul']); ?></td>
-                            </tr>
-                            <?php $total += $jadwal["sks"];?>
-                        <?php endforeach; ?>
-                        <tr>
-                            <td colspan="6" class="border border-gray-300 px-4 py-2 text-right"><b>Total SKS</b></td>
-                            <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($total); ?></td>
-                            <td class="border border-gray-300 px-4 py-2"></td>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="8" class="text-center text-red-500 py-4">
-                                <?= htmlspecialchars($error_message ?? "Tidak ada data mata kuliah."); ?>
-                            </td>
+            <form id="deleteForm" action="delete_jadwal.php" method="POST">
+                <table class="w-full table-auto border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 px-4 py-2">Pilih</th>
+                            <th class="border border-gray-300 px-4 py-2">Mata Kuliah</th>
+                            <th class="border border-gray-300 px-4 py-2">Hari</th>
+                            <th class="border border-gray-300 px-4 py-2">Jam</th>
+                            <th class="border border-gray-300 px-4 py-2">Ruangan</th>
+                            <th class="border border-gray-300 px-4 py-2">Kelas</th>
+                            <th class="border border-gray-300 px-4 py-2">Bobot (SKS)</th>
+                            <th class="border border-gray-300 px-4 py-2">Jenis</th>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-            <button class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Hapus Mata Kuliah</button>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($jadwal_data)): ?>
+                            <?php $total = 0; ?>
+                            <?php foreach ($jadwal_data as $jadwal): ?>
+                                <tr>
+                                    <td class="border border-gray-300 px-4 py-2 text-center">
+                                        <input type="checkbox" class="select-item" name="jadwal[]" value="<?= htmlspecialchars($jadwal['id_matkul']); ?>" />
+                                    </td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_matkul']); ?></td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_hari']); ?></td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['jam']); ?></td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_ruangan']); ?></td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['nama_kelas']); ?></td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['sks']); ?></td>
+                                    <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($jadwal['tipe_matkul']); ?></td>
+                                </tr>
+                                <?php $total += $jadwal["sks"]; ?>
+                            <?php endforeach; ?>
+                            <tr>
+                                <td colspan="6" class="border border-gray-300 px-4 py-2 text-right"><b>Total SKS</b></td>
+                                <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($total); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"></td>
+                            </tr>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="8" class="text-center text-red-500 py-4">
+                                    <?= htmlspecialchars($error_message ?? "Tidak ada data mata kuliah."); ?>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                <!-- Tombol hapus -->
+                <button type="submit" class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Hapus Mata Kuliah</button>
+            </form>
         </div>
     </main>
 
