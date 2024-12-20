@@ -99,12 +99,14 @@ if ($http_code == 200) {
     <main class="flex-grow container mx-auto p-4">
         <div class="bg-white shadow rounded-lg p-6">
             <h3 class="text-xl font-bold mb-4">Tambah Mata Kuliah</h3>
+
             <?php if (isset($_SESSION['error_message'])): ?>
                 <div class="bg-red-500 text-white p-4 mb-4 rounded">
                     <?= $_SESSION['error_message'] ?>
                     <?php unset($_SESSION['error_message']); ?>
                 </div>
             <?php endif; ?>
+            
             <form action="submit_krs.php" method="POST">
                 <table class="w-full table-auto border-collapse border border-gray-300">
                     <thead>

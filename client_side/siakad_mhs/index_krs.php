@@ -74,7 +74,7 @@ if ($semester_now !== null) {
     <?php
     include('layouts/navbar.php');
     ?>
-
+    
     <!-- Main Content -->
     <main class="flex-grow container mx-auto p-4">
         <div class="flex justify-between items-center mb-4">
@@ -82,6 +82,16 @@ if ($semester_now !== null) {
             <a href="create_krs.php" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Tambah Mata Kuliah</a>
         </div>
 
+        <?php 
+        if (isset($error_message)) {
+            echo "<div class='bg-red-500 text-white p-4 text-center'>$error_message</div>";
+        }
+        elseif (isset($_SESSION['success_message'])){
+            $pesan = $_SESSION['success_message'];
+            echo "<div class='bg-green-500 text-white p-4 mb-4 rounded'>$pesan</div>";
+            unset($_SESSION['success_message']);
+        }
+        ?>
         <!-- KRS Table Box -->
         <div class="bg-white shadow rounded-lg p-6">
             <h3 class="text-xl font-bold mb-4">Mata Kuliah yang Diambil</h3>
