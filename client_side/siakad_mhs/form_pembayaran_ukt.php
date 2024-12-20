@@ -2,44 +2,48 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $penyetor = $_POST['penyetor'];
-    $jumlah_uang = (int) $_POST['jumlah_uang'];
+    // Sanitize and validate form inputs
+    print_r($_POST);
+    $penyetor = trim($_POST['penyetor']);
+    $jumlah_uang = isset($_POST['jumlah_uang']) ? (int) $_POST['jumlah_uang'] : 0;
 
-    // Data yang akan dikirim ke API
-    $data = json_encode([
-        "penyetor" => $penyetor,
-        "jumlah_uang" => $jumlah_uang
-    ]);
-
-    // Inisialisasi cURL
-    $ch = curl_init("http://bank:5001/api/pembayaran");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
-    ]);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-    // Eksekusi cURL dan ambil respons
-    $response = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    // Parsing respons dari API
-    $result = json_decode($response, true);
-
-    if ($httpcode == 200) {
-        // Pembayaran berhasil
-        $success_message = $result['message'];
+    // Basic input validation
+    if (empty($penyetor) || $jumlah_uang <= 0) {
+        $error_message = "Nama penyetor atau jumlah uang tidak valid.";
     } else {
-        // Pembayaran gagal
+        // Data yang akan dikirim ke API
+        $data = json_encode([
+            "penyetor" => $penyetor,
+            "jumlah_uang" => $jumlah_uang,
+            "nim" => $_SESSION['nim']
+        ]);
+
+        // Inisialisasi cURL
+        $ch = curl_init("http://app:5000/payment");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        // Eksekusi cURL dan ambil respons
+        $response = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // Parsing respons dari API
+        $result = json_decode($response, true);
+
+        if ($httpcode == 200) {
+            // Pembayaran berhasil
+            header('Location: index_krs.php');
+            exit();
+        }
         $error_message = $result['message'] ?? "Pembayaran gagal. Periksa data Anda.";
     }
 }
 ?>
-
-</html>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,11 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <?php if (isset($error_message)): ?>
+            <p class="text-red-500 text-center mb-4"><?= $error_message; ?></p>
+        <?php endif; ?>
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Formulir Pembayaran UKT</h2>
         <form action="" method="POST" class="space-y-4">
             <div>
-                <label for="penyetor" class="block text-sm font-medium text-gray-700">Nama Lengkap (Penyetor)</label>
-                <input type="text" id="penyetor" name="penyetor" class="mt-1 w-full px-4 py-2 border rounded-lg" placeholder="Masukkan nama penyetor" required>
+                <label for="penyetor" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                <input readonly type="text" id="penyetor" name="penyetor" class="mt-1 w-full px-4 py-2 border rounded-lg" value="<?= $_SESSION['nama'] ?>" required>
             </div>
             <div>
                 <label for="alamat" class="block text-sm font-medium text-gray-700">Alamat</label>
@@ -78,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div>
                 <label for="jumlah_uang" class="block text-sm font-medium text-gray-700">Jumlah Uang</label>
-                <input type="number" id="jumlah_uang" name="jumlah_uang" class="mt-1 w-full px-4 py-2 border rounded-lg" placeholder="Masukkan jumlah uang" required>
+                <input readonly type="number" id="jumlah_uang" name="jumlah_uang" class="mt-1 w-full px-4 py-2 border rounded-lg" value="3000000" required>
             </div>
             <button type="submit" class="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Kirim</button>
         </form>

@@ -10,6 +10,7 @@ if (!isset($_SESSION['nim'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,24 +23,26 @@ if (!isset($_SESSION['nim'])) {
             flex-direction: column;
             min-height: 100vh;
         }
+
         main {
             flex: 1;
         }
     </style>
 </head>
+
 <body class="bg-gray-100">
     <!-- Navbar -->
-     <?php 
-        include('layouts/navbar.php');
-        include('../env.php');
-     ?>
+    <?php
+    include('layouts/navbar.php');
+    include('../env.php');
+    ?>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6">
         <section class="bg-white p-6 rounded-lg shadow-md">
             <h1 class="text-2xl font-bold text-gray-800 mb-4">Selamat Datang di SIAKAD</h1>
             <p class="text-gray-600 mb-6">Aplikasi Sistem Akademik Mahasiswa untuk pengisian KRS, pengelolaan data mahasiswa, dan informasi akademik lainnya.</p>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Card 1 -->
                 <div class="bg-blue-100 p-4 rounded-lg shadow">
@@ -79,4 +82,5 @@ if (!isset($_SESSION['nim'])) {
         </div>
     </footer>
 </body>
+
 </html>

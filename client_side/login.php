@@ -34,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Login berhasil, simpan token dan NIM ke dalam session
         $_SESSION['nim'] = $nim;
         $_SESSION['token'] = $result['token'];
+        $_SESSION['nama'] = $result['namamhs'][0];
 
         header("Location: siakad_mhs/home.php");
         exit();

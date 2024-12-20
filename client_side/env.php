@@ -1,2 +1,2 @@
-<?php 
-$BASE_URL = "http://localhost:5000";
+<?php
+$BASE_URL = "http://app:5000";

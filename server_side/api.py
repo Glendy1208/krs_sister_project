@@ -3,6 +3,7 @@ import jwt
 import datetime
 import mysql.connector
 from flask_bcrypt import Bcrypt
+import requests
 
 # Inisialisasi Bcrypt dan Blueprint
 bcrypt = Bcrypt()
@@ -12,18 +13,62 @@ SECRET_KEY = 'mysecretkey'
 
 # Koneksi Database
 def get_db_connection():
-    # return mysql.connector.connect(
-    #     host="mysql",
-    #     user="chronospng",      # Ganti dengan username MySQL Anda
-    #     password="chronospng",      # Ganti dengan password MySQL Anda
-    #     database="sister"
-    # )
-        return mysql.connector.connect(
-        host="localhost",
-        user="root",      # Ganti dengan username MySQL Anda
-        password="",      # Ganti dengan password MySQL Anda
+    return mysql.connector.connect(
+        host="mysql",
+        user="chronospng",      # Ganti dengan username MySQL Anda
+        password="chronospng",      # Ganti dengan password MySQL Anda
         database="sister"
     )
+    #     return mysql.connector.connect(
+    #     host="localhost",
+    #     user="root",      # Ganti dengan username MySQL Anda
+    #     password="",      # Ganti dengan password MySQL Anda
+    #     database="sister"
+    # )
+
+@api_bp.route('/payment', methods=['POST'])
+def payment():
+    data = request.get_json()
+    penyetor = data.get('penyetor')
+    jumlah_uang = data.get('jumlah_uang')
+    nim = data.get('nim')
+    
+    if not nim:
+        return jsonify({"message": "NIM is required"}), 400
+
+    # Prepare the data to be sent to the other service
+    payload = {
+        'penyetor': penyetor,
+        'jumlah_uang': jumlah_uang
+    }
+
+    # Make a POST request to the external service
+    response = requests.post(
+        "http://bank:5001/api/pembayaran",
+        json=payload,
+        headers={'Content-Type': 'application/json'}
+    )
+
+    # Check the response status
+    if response.status_code == 200:
+        try:
+            # Koneksi ke database
+            conn = get_db_connection()  # Assuming this function exists for DB connection
+            with conn.cursor() as cursor:
+                # Update the payment status in the database
+                cursor.execute('UPDATE semester_history SET paid = 1 WHERE nim_fk = %s', (nim,))
+                
+                # Commit the changes
+                conn.commit()
+
+            conn.close()
+            
+            return jsonify({"message": "Payment processed successfully", "data": response.json()}), 200
+        except Exception as e:
+            # Handle any exceptions that occur during DB operations
+            return jsonify({"message": "Database error", "error": str(e)}), 500
+    else:
+        return jsonify({"message": "Failed to process payment", "error": response.text}), 500
 
 @api_bp.route('/login', methods=['POST'])
 def login():
@@ -33,15 +78,16 @@ def login():
 
     # Validasi input
     if not nim or not password:
-        return jsonify({"message": "NIM and password are required"}), 400
-
+        return jsonify({"message": "NIM and password are required"}), 40
     # Koneksi ke database
     conn = get_db_connection()
     cursor = conn.cursor()
 
     # Ambil password berdasarkan NIM
     cursor.execute('SELECT password FROM mahasiswa WHERE nim = %s', (nim,))
-    result = cursor.fetchone()
+    result = cursor.fetchone()    
+    cursor.execute('SELECT nama FROM mahasiswa WHERE nim = %s', (nim,))
+    nama = cursor.fetchone()
     conn.close()
 
     if result:
@@ -56,7 +102,8 @@ def login():
 
             return jsonify({
                 'message': 'Login successful',
-                'token': token
+                'token': token,
+                'namamhs': nama
             }), 200
         else:
             return jsonify({"message": "Invalid password"}), 401
